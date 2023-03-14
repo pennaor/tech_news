@@ -2,9 +2,14 @@ from datetime import date
 from tech_news.database import search_news
 
 
+def build_search_results(news):
+    return [(new["title"], new["url"]) for new in news]
+
+
 def search_by_title(title):
     query = {"title": {"$regex": title, "$options": "i"}}
-    return [(new["title"], new["url"]) for new in search_news(query)]
+    news = search_news(query)
+    return build_search_results(news)
 
 
 def search_by_date(iso_date):
@@ -13,9 +18,11 @@ def search_by_date(iso_date):
     except ValueError:
         raise ValueError("Data inválida")
     query = {"timestamp": timestamp.strftime("%d/%m/%Y")}
-    return [(new["title"], new["url"]) for new in search_news(query)]
+    news = search_news(query)
+    return build_search_results(news)
 
 
-# Requisito 9
 def search_by_category(category):
-    """Seu código deve vir aqui"""
+    query = {"category": {"$regex": category, "$options": "i"}}
+    news = search_news(query)
+    return build_search_results(news)
