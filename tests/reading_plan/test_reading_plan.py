@@ -65,7 +65,7 @@ mocked_news = [
     },
 ]
 
-expected = {
+expected_result = {
     "readable": [
         {
             "unfilled_time": 3,
@@ -97,39 +97,14 @@ expected = {
 }
 
 
-@patch.object(ReadingPlanService, '_db_news_proxy', return_value=mocked_news)
-def test_reading_plan_group_news(_mock):
+def test_reading_plan_group_news():
     with pytest.raises(
         ValueError,
         match="Valor 'available_time' deve ser maior que zero"
     ):
         ReadingPlanService.group_news_for_available_time(-1)
 
-    result = ReadingPlanService.group_news_for_available_time(10)
-    # assert len(result) == 2
-
-    # readable = result.get("readable")
-    # assert type(readable) == list
-    # assert len(readable) == 2
-    # assert type(readable[0]) == dict
-    # assert type(readable[1]) == dict
-    # assert len(readable[0]) == 2
-    # assert len(readable[1]) == 2
-
-    # chosen_news_readble_0 = readable[0].get("chosen_news")
-    # assert type(chosen_news_readble_0) == list
-
-    # unfilled_time_readable_0 = readable[0].get("unfilled_time")
-    # assert unfilled_time_readable_0 == 3
-    # unfilled_time_readable_1 = readable[1].get("unfilled_time")
-    # assert unfilled_time_readable_1 == 0
-
-    # unreadable = result.get("unreadable")
-    # assert type(unreadable) == list
-    # assert len(unreadable) == 2
-    # assert type(unreadable[0]) == tuple
-    # assert type(unreadable[1]) == tuple
-    # assert len(unreadable[0]) == 2
-    # assert len(unreadable[1]) == 2
-
-    assert result == expected
+    with patch.object(ReadingPlanService, '_db_news_proxy') as db_news_proxy:
+        db_news_proxy.return_value = mocked_news
+        result = ReadingPlanService.group_news_for_available_time(10)
+        assert result == expected_result
